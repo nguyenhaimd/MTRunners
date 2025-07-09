@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Thursday Fallsgrove Millennium Trail Runners Around the World</title>
+  <title>Thursday Fallsgrove Millennium Trail Runners Around the World & West Virginia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Plotly.js -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -10,16 +10,60 @@
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body { margin: 0; background: #ffffff; color: #333333; font-family: 'Source Sans Pro', sans-serif; }
-    #globe { width: 100vw; height: 100vh; }
+    .container { display: flex; height: 100vh; }
+    #globe { flex: 1; }
+    .table-container { width: 25%; overflow-y: auto; background: #f8f8f8; padding: 20px; box-shadow: -2px 0 5px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-family: 'Roboto', sans-serif; }
+    th { background-color: #3498db; color: white; position: sticky; top: 0; }
   </style>
 </head>
 <body>
-  <div id="globe"></div>
+  <div class="container">
+    <div id="globe"></div>
+    <div class="table-container">
+      <h2>MT Runners</h2>
+      <table>
+        <thead>
+          <tr><th>Location</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>United States 🇺🇸</td></tr>
+          <tr><td>Iran 🇮🇷</td></tr>
+          <tr><td>South Korea 🇰🇷</td></tr>
+          <tr><td>Taiwan 🇹🇼</td></tr>
+          <tr><td>Vietnam 🇻🇳</td></tr>
+          <tr><td>Germany 🇩🇪</td></tr>
+          <tr><td>El Salvador 🇸🇻</td></tr>
+          <tr><td>Ireland 🇮🇪</td></tr>
+          <tr><td>Nepal 🇳🇵</td></tr>
+          <tr><td>Egypt 🇪🇬</td></tr>
+          <tr><td>Ethiopia 🇪🇹</td></tr>
+          <tr><td>Ecuador 🇪🇨</td></tr>
+          <tr><td>Canada 🇨🇦</td></tr>
+          <tr><td>Italy 🇮🇹</td></tr>
+          <tr><td>France 🇫🇷</td></tr>
+          <tr><td>Belgium 🇧🇪</td></tr>
+          <tr><td>Guyana 🇬🇾</td></tr>
+          <tr><td>Greece 🇬🇷</td></tr>
+          <tr><td>Philippines 🇵🇭</td></tr>
+          <tr><td>Mexico 🇲🇽</td></tr>
+          <tr><td>Cameroon 🇨🇲</td></tr>
+          <tr><td>Burkina Faso 🇧🇫</td></tr>
+          <tr><td>Argentina 🇦🇷</td></tr>
+          <tr><td>Ghana 🇬🇭</td></tr>
+          <tr><td>India 🇮🇳</td></tr>
+          <tr><td>West Virginia</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
   <script>
     const countries = [
       "United States","Iran","South Korea","Taiwan","Vietnam","Germany","El Salvador",
       "Ireland","Nepal","Egypt","Ethiopia","Ecuador","Canada","Italy","France","Belgium",
-      "Guyana","Greece","Philippines","Mexico","Cameroon","Burkina Faso"
+      "Guyana","Greece","Philippines","Mexico","Cameroon","Burkina Faso",
+      "Argentina","Ghana","India"
     ];
     const coords = {
       "United States": [37, -95], "Iran": [32, 53], "South Korea": [37.5, 127],
@@ -29,24 +73,26 @@
       "Canada": [56, -106], "Italy": [42.8, 12.5], "France": [46.2, 2.2],
       "Belgium": [50.8, 4.4], "Guyana": [4.9, -58.1], "Greece": [39, 22],
       "Philippines": [12.9, 122], "Mexico": [23, -102], "Cameroon": [3.9, 12.5],
-      "Burkina Faso": [12.4, -1.5]
+      "Burkina Faso": [12.4, -1.5], "Argentina": [-34, -64], "Ghana": [7, -1],
+      "India": [20.6, 78.9]
     };
-    const flags = {
-      "United States": "🇺🇸","Iran": "🇮🇷","South Korea": "🇰🇷","Taiwan": "🇹🇼","Vietnam": "🇻🇳",
-      "Germany": "🇩🇪","El Salvador": "🇸🇻","Ireland": "🇮🇪","Nepal": "🇳🇵","Egypt": "🇪🇬",
-      "Ethiopia": "🇪🇹","Ecuador": "🇪🇨","Canada": "🇨🇦","Italy": "🇮🇹","France": "🇫🇷",
-      "Belgium": "🇧🇪","Guyana": "🇬🇾","Greece": "🇬🇷","Philippines": "🇵🇭","Mexico": "🇲🇽",
-      "Cameroon": "🇨🇲","Burkina Faso": "🇧🇫"
-    };
-    const lats = countries.map(c => coords[c][0]);
-    const lons = countries.map(c => coords[c][1]);
-    const flagIcons = countries.map(c => flags[c]);
+    const stateCoord = [38.5976, -80.4549];
 
-    // Highlight countries
+    const lats = Object.values(coords).map(c => c[0]).concat(stateCoord[0]);
+    const lons = Object.values(coords).map(c => c[1]).concat(stateCoord[1]);
+    const flagIcons = Object.keys(coords).map(c => ({
+      "United States":"🇺🇸","Iran":"🇮🇷","South Korea":"🇰🇷","Taiwan":"🇹🇼","Vietnam":"🇻🇳",
+      "Germany":"🇩🇪","El Salvador":"🇸🇻","Ireland":"🇮🇪","Nepal":"🇳🇵","Egypt":"🇪🇬",
+      "Ethiopia":"🇪🇹","Ecuador":"🇪🇨","Canada":"🇨🇦","Italy":"🇮🇹","France":"🇫🇷",
+      "Belgium":"🇧🇪","Guyana":"🇬🇾","Greece":"🇬🇷","Philippines":"🇵🇭","Mexico":"🇲🇽",
+      "Cameroon":"🇨🇲","Burkina Faso":"🇧🇫","Argentina":"🇦🇷","Ghana":"🇬🇭","India":"🇮🇳"
+    }[c])).slice().concat([]);
+
+    // Choropleth for countries
     const traceChoro = {
       type: 'choropleth',
-      locations: countries,
-      z: Array(countries.length).fill(1),
+      locations: Object.keys(coords),
+      z: Object.keys(coords).map(() => 1),
       locationmode: 'country names',
       autocolorscale: false,
       colorscale: [[0,'#e0e0e0'],[1,'#3498db']],
@@ -55,10 +101,11 @@
       hoverinfo: 'location'
     };
 
-    // Flag icons positioned slightly above labels
+    // Flags trace
     const traceFlags = {
       type: 'scattergeo',
-      lat: lats, lon: lons,
+      lat: lats.slice(0, -1),
+      lon: lons.slice(0, -1),
       mode: 'text',
       text: flagIcons,
       textposition: 'top center',
@@ -66,12 +113,26 @@
       hoverinfo: 'none'
     };
 
-    // Country labels positioned below flags
+    // West Virginia marker
+    const traceState = {
+      type: 'scattergeo',
+      lat: [stateCoord[0]],
+      lon: [stateCoord[1]],
+      mode: 'markers+text',
+      marker: { symbol: 'diamond', size: 12, color: '#e74c3c', line: { width: 1, color: '#ffffff' } },
+      text: ['West Virginia'],
+      textposition: 'bottom center',
+      textfont: { family: 'Roboto', size: 12, color: '#c0392b' },
+      hoverinfo: 'none'
+    };
+
+    // Country labels trace excluding West Virginia
     const traceLabels = {
       type: 'scattergeo',
-      lat: lats, lon: lons,
+      lat: lats.slice(0, -1),
+      lon: lons.slice(0, -1),
       mode: 'text',
-      text: countries,
+      text: Object.keys(coords),
       textposition: 'bottom center',
       textfont: { family: 'Roboto', size: 12, color: '#2c3e50' },
       hoverinfo: 'none'
@@ -79,7 +140,7 @@
 
     const layout = {
       title: {
-        text: 'Thursday Fallsgrove Millennium Trail Runners Around the World',
+        text: 'Thursday Fallsgrove Millennium Trail Runners Around the World & West Virginia',
         font: { family: 'Source Sans Pro', size: 20, color: '#2c3e50' },
         x: 0.5
       },
@@ -97,7 +158,7 @@
       margin: { l:0, r:0, b:0, t:60 }
     };
 
-    Plotly.newPlot('globe', [traceChoro, traceFlags, traceLabels], layout, {responsive: true});
+    Plotly.newPlot('globe', [traceChoro, traceFlags, traceState, traceLabels], layout, {responsive: true});
   </script>
 </body>
 </html>
