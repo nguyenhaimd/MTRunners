@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Thursday Fallsgrove Millennium Trail Runners Around the World</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #ffffff; color: #333333; font-family: 'Source Sans Pro', sans-serif; }
+    #globe { width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="globe"></div>
+  <script>
+    const countries = [
+      "United States","Iran","South Korea","Taiwan","Vietnam","Germany","El Salvador",
+      "Ireland","Nepal","Egypt","Ethiopia","Ecuador","Canada","Italy","France","Belgium",
+      "Guyana","Greece","Philippines","Mexico","Cameroon","Burkina Faso"
+    ];
+    const coords = {
+      "United States": [37, -95], "Iran": [32, 53], "South Korea": [37.5, 127],
+      "Taiwan": [23.7, 121], "Vietnam": [14.6, 108.3], "Germany": [51, 10],
+      "El Salvador": [13.8, -88.9], "Ireland": [53, -8], "Nepal": [28.4, 84.7],
+      "Egypt": [26, 30], "Ethiopia": [9, 39], "Ecuador": [-1.4, -78.4],
+      "Canada": [56, -106], "Italy": [42.8, 12.5], "France": [46.2, 2.2],
+      "Belgium": [50.8, 4.4], "Guyana": [4.9, -58.1], "Greece": [39, 22],
+      "Philippines": [12.9, 122], "Mexico": [23, -102], "Cameroon": [3.9, 12.5],
+      "Burkina Faso": [12.4, -1.5]
+    };
+    const lats = countries.map(c => coords[c][0]);
+    const lons = countries.map(c => coords[c][1]);
+
+    // Prepare label positions with custom offsets
+    const labelLats = [];
+    const labelLons = [];
+    countries.forEach(c => {
+      let [lat, lon] = coords[c];
+      if (c === "Belgium") {
+        labelLats.push(lat + 1.0);
+        labelLons.push(lon - 2.0);
+      } else if (c === "Germany") {
+        labelLats.push(lat + 1.0);
+        labelLons.push(lon + 2.0);
+      } else {
+        labelLats.push(lat);
+        labelLons.push(lon);
+      }
+    });
+
+    const traceChoro = {
+      type: 'choropleth',
+      locations: countries,
+      z: Array(countries.length).fill(1),
+      locationmode: 'country names',
+      autocolorscale: false,
+      colorscale: [[0,'#e0e0e0'],[1,'#3498db']],
+      showscale: false,
+      marker: { line: { color: '#ffffff', width: 0.5 } },
+      hoverinfo: 'location'
+    };
+
+    const traceMarker = {
+      type: 'scattergeo',
+      lat: lats, lon: lons,
+      mode: 'text',
+      text: Array(countries.length).fill('🏃'),
+      textposition: 'top center',
+      textfont: { size: 20 },
+      hoverinfo: 'none'
+    };
+
+    const traceLabels = {
+      type: 'scattergeo',
+      lat: labelLats, lon: labelLons,
+      mode: 'text',
+      text: countries,
+      textposition: 'bottom center',
+      textfont: { family: 'Roboto', size: 12, color: '#2c3e50' },
+      hoverinfo: 'none'
+    };
+
+    const layout = {
+      title: {
+        text: 'Thursday Fallsgrove Millennium Trail Runners Around the World',
+        font: { family: 'Source Sans Pro', size: 20, color: '#2c3e50' },
+        x: 0.5
+      },
+      geo: {
+        projection: { type: 'orthographic' },
+        showland: true, landcolor: '#f8f8f8',
+        showcountries: true, countrycolor: '#cccccc',
+        showocean: true, oceancolor: '#ddeeff',
+        showlakes: true, lakecolor: '#ddeeff',
+        lonaxis: { showgrid: true, gridcolor: '#dddddd' },
+        lataxis: { showgrid: true, gridcolor: '#dddddd' }
+      },
+      paper_bgcolor: '#ffffff',
+      plot_bgcolor: '#ffffff',
+      margin: { l:0, r:0, b:0, t:60 }
+    };
+
+    Plotly.newPlot('globe', [traceChoro, traceMarker, traceLabels], layout, {responsive: true});
+  </script>
+</body>
+</html>
