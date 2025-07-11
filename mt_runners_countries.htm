@@ -28,7 +28,7 @@
     <div id="globe"></div>
     <div class="table-container">
       <h2>MT Runners</h2>
-      <div class="count">Total Countries: 29</div>
+      <div class="count">Total Countries: 30</div>
       <table>
         <thead><tr><th>Location</th></tr></thead>
         <tbody>
@@ -55,6 +55,7 @@
           <tr><td>Mexico 🇲🇽</td></tr>
           <tr><td>Nepal 🇳🇵</td></tr>
           <tr><td>Nigeria 🇳🇬</td></tr>
+          <tr><td>Paraguay 🇵🇾</td></tr>
           <tr><td>Philippines 🇵🇭</td></tr>
           <tr><td>Russia 🇷🇺</td></tr>
           <tr><td>South Korea 🇰🇷</td></tr>
@@ -71,15 +72,15 @@
       "Argentina","Belgium","Burkina Faso","Cameroon","Canada","China","Cuba",
       "Ecuador","Egypt","El Salvador","Ethiopia","France","Germany","Ghana",
       "Greece","India","Iran","Iraq","Ireland","Italy","Mexico","Nepal",
-      "Nigeria","Philippines","Russia","South Korea","Taiwan","United States","Vietnam"
+      "Nigeria","Paraguay","Philippines","Russia","South Korea","Taiwan","United States","Vietnam"
     ];
     const coords = {
       "Argentina":[-34,-64],"Belgium":[50.8,4.4],"Burkina Faso":[12.4,-1.5],"Cameroon":[3.9,12.5],"Canada":[56,-106],
       "China":[35,103],"Cuba":[21.5,-80],"Ecuador":[-1.4,-78.4],"Egypt":[26,30],"El Salvador":[13.8,-88.9],"Ethiopia":[9,39],
       "France":[46.2,2.2],"Germany":[51,10],"Ghana":[7,-1],"Greece":[39,22],"India":[20.6,78.9],
       "Iran":[32,53],"Iraq":[33,44],"Ireland":[53,-8],"Italy":[42.8,12.5],"Mexico":[23,-102],
-      "Nepal":[28.4,84.7],"Nigeria":[9,8],"Philippines":[12.9,122],"Russia":[55.75,37.617],"South Korea":[37.5,127],"Taiwan":[23.7,121],
-      "United States":[37,-95],"Vietnam":[14.6,108.3]
+      "Nepal":[28.4,84.7],"Nigeria":[9,8],"Paraguay":[-23,-58],"Philippines":[12.9,122],"Russia":[55.75,37.617],
+      "South Korea":[37.5,127],"Taiwan":[23.7,121],"United States":[37,-95],"Vietnam":[14.6,108.3]
     };
     const stateCoord = [38.5976, -80.4549];
     const lats = countries.map(c => coords[c][0]).concat(stateCoord[0]);
@@ -89,10 +90,11 @@
       "China":"🇨🇳","Cuba":"🇨🇺","Ecuador":"🇪🇨","Egypt":"🇪🇬","El Salvador":"🇸🇻",
       "Ethiopia":"🇪🇹","France":"🇫🇷","Germany":"🇩🇪","Ghana":"🇬🇭","Greece":"🇬🇷",
       "India":"🇮🇳","Iran":"🇮🇷","Iraq":"🇮🇶","Ireland":"🇮🇪","Italy":"🇮🇹","Mexico":"🇲🇽",
-      "Nepal":"🇳🇵","Nigeria":"🇳🇬","Philippines":"🇵🇭","Russia":"🇷🇺","South Korea":"🇰🇷",
-      "Taiwan":"🇹🇼","United States":"🇺🇸","Vietnam":"🇻🇳"
+      "Nepal":"🇳🇵","Nigeria":"🇳🇬","Paraguay":"🇵🇾","Philippines":"🇵🇭","Russia":"🇷🇺",
+      "South Korea":"🇰🇷","Taiwan":"🇹🇼","United States":"🇺🇸","Vietnam":"🇻🇳"
     };
     const flagIcons = countries.map(c => flags[c]);
+
     Plotly.newPlot("globe", [
       { type: "choropleth", locations: countries, z: countries.map(() => 1), locationmode: "country names", autocolorscale: false, colorscale: [[0,"#e0e0e0"],[1,"#3498db"]], showscale: false, marker: { line: { color: "#fff", width: 0.5 } } },
       { type: "scattergeo", lat: lats.slice(0,-1), lon: lons.slice(0,-1), mode: "text", text: flagIcons, textposition: "top center", textfont: { size: 18 }, hoverinfo: "none" },
