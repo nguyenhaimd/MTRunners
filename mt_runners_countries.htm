@@ -13,7 +13,7 @@
     .container { display: flex; height: 100vh; }
     #globe { flex: 1; }
     .table-container {
-      width: 15%; max-width: 220px; background: #fafafa;
+      width: 15%; max-width: 240px; background: #fafafa;
       padding: 20px; box-shadow: -2px 0 8px rgba(0,0,0,0.1); overflow-y: auto;
     }
     h2 { margin: 0 0 10px; text-align: center; font-size: 18px; color: #2c3e50; }
@@ -28,7 +28,7 @@
     <div id="globe"></div>
     <div class="table-container">
       <h2>MT Runners</h2>
-      <div class="count">Total Countries: 30</div>
+      <div class="count">Total Countries: 31</div>
       <table>
         <thead><tr><th>Location</th></tr></thead>
         <tbody>
@@ -38,6 +38,7 @@
           <tr><td>Cameroon 🇨🇲</td></tr>
           <tr><td>Canada 🇨🇦</td></tr>
           <tr><td>China 🇨🇳</td></tr>
+          <tr><td>Colombia 🇨🇴</td></tr>
           <tr><td>Cuba 🇨🇺</td></tr>
           <tr><td>Ecuador 🇪🇨</td></tr>
           <tr><td>Egypt 🇪🇬</td></tr>
@@ -69,41 +70,55 @@
   </div>
   <script>
     const countries = [
-      "Argentina","Belgium","Burkina Faso","Cameroon","Canada","China","Cuba",
-      "Ecuador","Egypt","El Salvador","Ethiopia","France","Germany","Ghana",
-      "Greece","India","Iran","Iraq","Ireland","Italy","Mexico","Nepal",
-      "Nigeria","Paraguay","Philippines","Russia","South Korea","Taiwan","United States","Vietnam"
+      "Argentina","Belgium","Burkina Faso","Cameroon","Canada","China","Colombia","Cuba",
+      "Ecuador","Egypt","El Salvador","Ethiopia","France","Germany","Ghana","Greece",
+      "India","Iran","Iraq","Ireland","Italy","Mexico","Nepal","Nigeria","Paraguay",
+      "Philippines","Russia","South Korea","Taiwan","United States","Vietnam"
     ];
     const coords = {
       "Argentina":[-34,-64],"Belgium":[50.8,4.4],"Burkina Faso":[12.4,-1.5],"Cameroon":[3.9,12.5],"Canada":[56,-106],
-      "China":[35,103],"Cuba":[21.5,-80],"Ecuador":[-1.4,-78.4],"Egypt":[26,30],"El Salvador":[13.8,-88.9],"Ethiopia":[9,39],
-      "France":[46.2,2.2],"Germany":[51,10],"Ghana":[7,-1],"Greece":[39,22],"India":[20.6,78.9],
-      "Iran":[32,53],"Iraq":[33,44],"Ireland":[53,-8],"Italy":[42.8,12.5],"Mexico":[23,-102],
-      "Nepal":[28.4,84.7],"Nigeria":[9,8],"Paraguay":[-23,-58],"Philippines":[12.9,122],"Russia":[55.75,37.617],
-      "South Korea":[37.5,127],"Taiwan":[23.7,121],"United States":[37,-95],"Vietnam":[14.6,108.3]
+      "China":[35,103],"Colombia":[4.6,-74],"Cuba":[21.5,-80],"Ecuador":[-1.4,-78.4],"Egypt":[26,30],
+      "El Salvador":[13.8,-88.9],"Ethiopia":[9,39],"France":[46.2,2.2],"Germany":[51,10],"Ghana":[7,-1],
+      "Greece":[39,22],"India":[20.6,78.9],"Iran":[32,53],"Iraq":[33,44],"Ireland":[53,-8],
+      "Italy":[42.8,12.5],"Mexico":[23,-102],"Nepal":[28.4,84.7],"Nigeria":[9,8],"Paraguay":[-23,-58],
+      "Philippines":[12.9,122],"Russia":[55.75,37.617],"South Korea":[37.5,127],"Taiwan":[23.7,121],
+      "United States":[37,-95],"Vietnam":[14.6,108.3]
     };
     const stateCoord = [38.5976, -80.4549];
     const lats = countries.map(c => coords[c][0]).concat(stateCoord[0]);
     const lons = countries.map(c => coords[c][1]).concat(stateCoord[1]);
     const flags = {
-      "Argentina":"🇦🇷","Belgium":"🇧🇪","Burkina Faso":"🇧🇫","Cameroon":"🇨🇲","Canada":"🇨🇦",
-      "China":"🇨🇳","Cuba":"🇨🇺","Ecuador":"🇪🇨","Egypt":"🇪🇬","El Salvador":"🇸🇻",
-      "Ethiopia":"🇪🇹","France":"🇫🇷","Germany":"🇩🇪","Ghana":"🇬🇭","Greece":"🇬🇷",
-      "India":"🇮🇳","Iran":"🇮🇷","Iraq":"🇮🇶","Ireland":"🇮🇪","Italy":"🇮🇹","Mexico":"🇲🇽",
-      "Nepal":"🇳🇵","Nigeria":"🇳🇬","Paraguay":"🇵🇾","Philippines":"🇵🇭","Russia":"🇷🇺",
-      "South Korea":"🇰🇷","Taiwan":"🇹🇼","United States":"🇺🇸","Vietnam":"🇻🇳"
+      "Argentina":"🇦🇷","Belgium":"🇧🇪","Burkina Faso":"🇧🇫","Cameroon":"🇨🇲","Canada":"🇨🇦","China":"🇨🇳",
+      "Colombia":"🇨🇴","Cuba":"🇨🇺","Ecuador":"🇪🇨","Egypt":"🇪🇬","El Salvador":"🇸🇻","Ethiopia":"🇪🇹",
+      "France":"🇫🇷","Germany":"🇩🇪","Ghana":"🇬🇭","Greece":"🇬🇷","India":"🇮🇳","Iran":"🇮🇷",
+      "Iraq":"🇮🇶","Ireland":"🇮🇪","Italy":"🇮🇹","Mexico":"🇲🇽","Nepal":"🇳🇵","Nigeria":"🇳🇬",
+      "Paraguay":"🇵🇾","Philippines":"🇵🇭","Russia":"🇷🇺","South Korea":"🇰🇷","Taiwan":"🇹🇼",
+      "United States":"🇺🇸","Vietnam":"🇻🇳"
     };
     const flagIcons = countries.map(c => flags[c]);
 
     Plotly.newPlot("globe", [
-      { type: "choropleth", locations: countries, z: countries.map(() => 1), locationmode: "country names", autocolorscale: false, colorscale: [[0,"#e0e0e0"],[1,"#3498db"]], showscale: false, marker: { line: { color: "#fff", width: 0.5 } } },
-      { type: "scattergeo", lat: lats.slice(0,-1), lon: lons.slice(0,-1), mode: "text", text: flagIcons, textposition: "top center", textfont: { size: 18 }, hoverinfo: "none" },
-      { type: "scattergeo", lat: [stateCoord[0]], lon: [stateCoord[1]], mode: "markers+text", marker: { symbol: "diamond", size: 12, color: "#e74c3c", line: { width: 1, color: "#fff" } }, text: ["West Virginia"], textposition: "bottom center", textfont: { family: "Roboto", size: 12, color: "#c0392b" }, hoverinfo: "none" },
-      { type: "scattergeo", lat: lats.slice(0,-1), lon: lons.slice(0,-1), mode: "text", text: countries, textposition: "bottom center", textfont: { family: "Roboto", size: 12, color: "#2c3e50" }, hoverinfo: "none" }
+      { type: "choropleth", locations: countries, z: countries.map(() => 1), locationmode: "country names",
+        autocolorscale: false, colorscale: [[0,"#e0e0e0"],[1,"#3498db"]], showscale: false,
+        marker: { line: { color: "#fff", width: 0.5 } } },
+      { type: "scattergeo", lat: lats.slice(0,-1), lon: lons.slice(0,-1), mode: "text",
+        text: flagIcons, textposition: "top center", textfont: { size: 18 }, hoverinfo: "none" },
+      { type: "scattergeo", lat: [stateCoord[0]], lon: [stateCoord[1]], mode: "markers+text",
+        marker: { symbol: "diamond", size: 12, color: "#e74c3c", line: { width: 1, color: "#fff" } },
+        text: ["West Virginia"], textposition: "bottom center",
+        textfont: { family: "Roboto", size: 12, color: "#c0392b" }, hoverinfo: "none" },
+      { type: "scattergeo", lat: lats.slice(0,-1), lon: lons.slice(0,-1), mode: "text",
+        text: countries, textposition: "bottom center",
+        textfont: { family: "Roboto", size: 12, color: "#2c3e50" }, hoverinfo: "none" }
     ], {
-      title: { text: "Thursday Fallsgrove Millennium Trail Runners Around the World", font: { family: "Source Sans Pro", size: 20, color: "#2c3e50" }, x: 0.5 },
-      geo: { projection: { type: "orthographic" }, showland: true, landcolor: "#f8f8f8", showcountries: true, countrycolor: "#cccccc", showocean: true, oceancolor: "#ddeeff", showlakes: true, lakecolor: "#ddeeff", lonaxis: { showgrid: true, gridcolor: "#dddddd" }, lataxis: { showgrid: true, gridcolor: "#dddddd" } },
-      paper_bgcolor: "#fff", plot_bgcolor: "#fff", margin: { l: 0, r: 0, b: 0, t: 60 }
+      title: { text: "Thursday Fallsgrove Millennium Trail Runners Around the World",
+        font: { family: "Source Sans Pro", size: 20, color: "#2c3e50" }, x: 0.5 },
+      geo: { projection: { type: "orthographic" }, showland: true, landcolor: "#f8f8f8",
+        showcountries: true, countrycolor: "#cccccc", showocean: true, oceancolor: "#ddeeff",
+        showlakes: true, lakecolor: "#ddeeff",
+        lonaxis: { showgrid: true, gridcolor: "#dddddd" },
+        lataxis: { showgrid: true, gridcolor: "#dddddd" } },
+      paper_bgcolor: "#fff", plot_bgcolor: "#fff", margin: { l:0, r:0, b:0, t:60 }
     }, { responsive: true });
   </script>
 </body>
