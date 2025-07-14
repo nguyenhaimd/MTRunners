@@ -218,7 +218,8 @@
         })
         .htmlLng(d => d.properties.LON)
         .htmlAltitude(0.07)
-        .onGlobeReady(() => {
+       /*
+            .onGlobeReady(() => {
             fetch("https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson")
                 .then(res => res.json())
                 .then(countriesGeoJson => {
@@ -233,6 +234,47 @@
                     world.htmlElementsData(countryData.filter(d => highlightedCountries.has(d.properties.NAME) && countryIsoMap.has(d.properties.NAME)));
                 });
         });
+        */
+
+        // remove French Guiana
+        .onGlobeReady(() => {
+  fetch("https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson")
+    .then(res => res.json())
+    .then(countriesGeoJson => {
+      // 1. Remove the Guiana sub-polygon from France
+      const cleaned = countriesGeoJson.features.map(feature => {
+        if (feature.properties.NAME === "France") {
+          feature.geometry.coordinates = feature.geometry.coordinates.filter(polygonCoords => {
+            // polygonCoords is [ [lon, lat], ... ] for one ring
+            const ring = polygonCoords[0];
+            // compute average longitude
+            const avgLon = ring.reduce((sum, [lon]) => sum + lon, 0) / ring.length;
+            // keep only the European piece (lon > -30)
+            return avgLon > -30;
+          });
+        }
+        return feature;
+      });
+
+      // 2. Recompute centroids (for labels) and attach LAT/LON
+      const countryData = cleaned.map(feature => {
+        const c = turf.centroid(feature.geometry);
+        feature.properties.LAT = c.geometry.coordinates[1];
+        feature.properties.LON = c.geometry.coordinates[0];
+        return feature;
+      });
+
+      // 3. Feed back into the globe exactly as before
+      world.polygonsData(countryData);
+      world.htmlElementsData(
+        countryData.filter(d =>
+          highlightedCountries.has(d.properties.NAME) &&
+          countryIsoMap.has(d.properties.NAME)
+        )
+      );
+    });
+});
+        // remove French Guiana
 
         const turfScript = document.createElement("script");
         turfScript.src = "https://unpkg.com/@turf/turf@6/turf.min.js";
