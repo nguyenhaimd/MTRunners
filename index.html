@@ -174,11 +174,12 @@
         .polygonAltitude(0.06)
         //.polygonCapColor(feat => highlightedCountries.has(feat.properties.NAME) ? "rgba(0, 0, 255, 0.8)" : "rgba(150, 150, 150, 0.4)")
         .polygonCapColor(feat => {
-         const name = feat.properties.NAME;
-         const isFrenchGuiana = name === "France" && feat.properties.LAT < 10 && feat.properties.LON < -50;
-         return (highlightedCountries.has(name) && !isFrenchGuiana)
-         ? "rgba(0, 0, 255, 0.8)"
-         : "rgba(150, 150, 150, 0.4)";
+    const name = feat.properties.NAME;
+    const isoA3 = feat.properties.ISO_A3;
+    const isFrenchGuiana = name === "France" && isoA3 === "GUF";
+    return (highlightedCountries.has(name) && !isFrenchGuiana)
+        ? "rgba(0, 0, 255, 0.8)"
+        : "rgba(150, 150, 150, 0.4)";
 })
         .polygonSideColor(() => "rgba(0, 100, 0, 0.15)")
         .polygonStrokeColor(() => "#111")
