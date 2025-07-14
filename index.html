@@ -173,15 +173,18 @@
         .polygonsData([])
         .polygonAltitude(0.06)
        // .polygonCapColor(feat => highlightedCountries.has(feat.properties.NAME) ? "rgba(0, 0, 255, 0.8)" : "rgba(150, 150, 150, 0.4)")
+
             .polygonCapColor(feat => {
-  const { NAME, ISO_A3 } = feat.properties;
-  // if it's named "France", only highlight the ISO_A3=FRA polygon
+  const { NAME, LAT } = feat.properties;
+
+  // If this is a "France" polygon, only shade it if its centroid is up in Europe
   if (NAME === "France") {
-    return ISO_A3 === "FRA"
-      ? "rgba(0, 0, 255, 0.8)"
-      : "rgba(150, 150, 150, 0.4)";   // French Guiana stays grey
+    return LAT > 10
+      ? "rgba(0, 0, 255, 0.8)"   // mainland France (centroid ~46° N)
+      : "rgba(150, 150, 150, 0.4)"; // French Guiana (centroid ~4° N)
   }
-  // for every other country, use your existing highlight set
+
+  // Everyone else you highlight exactly as before
   return highlightedCountries.has(NAME)
     ? "rgba(0, 0, 255, 0.8)"
     : "rgba(150, 150, 150, 0.4)";
