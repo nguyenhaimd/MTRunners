@@ -172,7 +172,20 @@
         .backgroundImageUrl("//unpkg.com/three-globe/example/img/night-sky.png")
         .polygonsData([])
         .polygonAltitude(0.06)
-        .polygonCapColor(feat => highlightedCountries.has(feat.properties.NAME) ? "rgba(0, 0, 255, 0.8)" : "rgba(150, 150, 150, 0.4)")
+       // .polygonCapColor(feat => highlightedCountries.has(feat.properties.NAME) ? "rgba(0, 0, 255, 0.8)" : "rgba(150, 150, 150, 0.4)")
+            .polygonCapColor(feat => {
+  const { NAME, ISO_A3 } = feat.properties;
+  // if it's named "France", only highlight the ISO_A3=FRA polygon
+  if (NAME === "France") {
+    return ISO_A3 === "FRA"
+      ? "rgba(0, 0, 255, 0.8)"
+      : "rgba(150, 150, 150, 0.4)";   // French Guiana stays grey
+  }
+  // for every other country, use your existing highlight set
+  return highlightedCountries.has(NAME)
+    ? "rgba(0, 0, 255, 0.8)"
+    : "rgba(150, 150, 150, 0.4)";
+})
         
         .polygonSideColor(() => "rgba(0, 100, 0, 0.15)")
         .polygonStrokeColor(() => "#111")
