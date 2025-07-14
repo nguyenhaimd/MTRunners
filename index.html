@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D World Map</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: sans-serif; }
+        #globeViz { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .country-label {
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 4px 8px;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .flag-icon {
+            width: 20px;
+            height: 14px;
+            margin-right: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        #countryTableContainer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-height: 90%;
+            overflow-y: auto;
+            color: #333;
+        }
+        #countryTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #countryTable th, #countryTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #countryTable th {
+            background-color: #f2f2f2;
+        }
+        .collapsible-header {
+            cursor: pointer;
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collapsible-content {
+            display: none;
+            overflow: hidden;
+        }
+        .collapsible-header.active + .collapsible-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="globeViz"></div>
+
+    <div id="countryTableContainer">
+        <div class="collapsible-header" id="tableHeader">
+            <h2 style="margin: 0;">MT Runners Around the World (<span id="countryCount"></span>)</h2>
+            <span>&#9660;</span> <!-- Down arrow -->
+        </div>
+        <div class="collapsible-content">
+            <table id="countryTable">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Country</th>
+                    </tr>
+                </thead>
+                <tbody id="countryTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/d3-dsv"></script>
+    <script src="https://unpkg.com/d3-scale-chromatic"></script>
+    <script src="https://unpkg.com/globe.gl"></script>
+
+    <script>
+        const countries = [
+            { name: "Argentina", iso2: "AR" },
+            { name: "Belgium", iso2: "BE" },
+            { name: "Burkina Faso", iso2: "BF" },
+            { name: "Cameroon", iso2: "CM" },
+            { name: "Canada", iso2: "CA" },
+            { name: "China", iso2: "CN" },
+            { name: "Colombia", iso2: "CO" },
+            { name: "Cuba", iso2: "CU" },
+            { name: "Ecuador", iso2: "EC" },
+            { name: "Egypt", iso2: "EG" },
+            { name: "El Salvador", iso2: "SV" },
+            { name: "Ethiopia", iso2: "ET" },
+            { name: "France", iso2: "FR" },
+            { name: "Germany", iso2: "DE" },
+            { name: "Ghana", iso2: "GH" },
+            { name: "Greece", iso2: "GR" },
+            { name: "India", iso2: "IN" },
+            { name: "Iran", iso2: "IR" },
+            { name: "Iraq", iso2: "IQ" },
+            { name: "Ireland", iso2: "IE" },
+            { name: "Italy", iso2: "IT" },
+            { name: "Mexico", iso2: "MX" },
+            { name: "Nepal", iso2: "NP" },
+            { name: "Nigeria", iso2: "NG" },
+            { name: "Paraguay", iso2: "PY" },
+            { name: "Philippines", iso2: "PH" },
+            { name: "Russia", iso2: "RU" },
+            { name: "South Korea", iso2: "KR" },
+            { name: "Taiwan", iso2: "TW" },
+            { name: "United States of America", iso2: "US" }, // Corrected name for USA
+            { name: "Vietnam", iso2: "VN" }
+        ];
+
+        const highlightedCountries = new Set(countries.map(c => c.name));
+        const countryIsoMap = new Map(countries.map(c => [c.name, c.iso2]));
+
+        // Populate the country table
+        const countryTableBody = document.getElementById("countryTableBody");
+        document.getElementById("countryCount").textContent = countries.length;
+        countries.forEach((country, index) => {
+            const row = countryTableBody.insertRow();
+            const numCell = row.insertCell();
+            const countryCell = row.insertCell();
+            numCell.textContent = index + 1;
+
+            const flagImg = document.createElement("img");
+            flagImg.className = "flag-icon";
+            flagImg.src = `https://flagcdn.com/w20/${country.iso2.toLowerCase()}.png`;
+            flagImg.alt = `${country.name} flag`;
+            flagImg.style.marginRight = "5px";
+
+            const countryNameSpan = document.createElement("span");
+            countryNameSpan.textContent = country.name;
+
+            countryCell.appendChild(flagImg);
+            countryCell.appendChild(countryNameSpan);
+        });
+
+        // Collapsible table functionality
+        const tableHeader = document.getElementById("tableHeader");
+        const collapsibleContent = document.querySelector(".collapsible-content");
+
+        tableHeader.addEventListener("click", function() {
+            this.classList.toggle("active");
+            if (collapsibleContent.style.display === "block") {
+                collapsibleContent.style.display = "none";
+            } else {
+                collapsibleContent.style.display = "block";
+            }
+        });
+
+        const world = Globe()(
+            document.getElementById("globeViz")
+        )
+        .globeImageUrl("//unpkg.com/three-globe/example/img/earth-day.jpg")
+        .backgroundImageUrl("//unpkg.com/three-globe/example/img/night-sky.png")
+        .polygonsData([])
+        .polygonAltitude(0.06)
+        .polygonCapColor(feat => highlightedCountries.has(feat.properties.NAME) ? "rgba(0, 0, 255, 0.8)" : "rgba(150, 150, 150, 0.4)")
+        .polygonSideColor(() => "rgba(0, 100, 0, 0.15)")
+        .polygonStrokeColor(() => "#111")
+        .htmlElementsData([])
+        .htmlElement(d => {
+            const el = document.createElement("div");
+            el.className = "country-label";
+            const countryName = d.properties.NAME;
+            const isoAlpha2 = countryIsoMap.get(countryName); // Get ISO Alpha-2 from our map
+            const flagUrl = `https://flagcdn.com/w20/${isoAlpha2.toLowerCase()}.png`;
+
+            const flagImg = document.createElement("img");
+            flagImg.className = "flag-icon";
+            flagImg.src = flagUrl;
+            flagImg.alt = `${countryName} flag`;
+
+            const textSpan = document.createElement("span");
+            textSpan.textContent = countryName;
+
+            el.appendChild(flagImg);
+            el.appendChild(textSpan);
+
+            return el;
+        })
+        .htmlLat(d => {
+            // Manual adjustments for overlapping labels
+            if (d.properties.NAME === "Germany") return d.properties.LAT + 2; // Adjust latitude for Germany
+            if (d.properties.NAME === "Belgium") return d.properties.LAT - 1; // Adjust latitude for Belgium
+            return d.properties.LAT;
+        })
+        .htmlLng(d => d.properties.LON)
+        .htmlAltitude(0.07)
+        .onGlobeReady(() => {
+            fetch("https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson")
+                .then(res => res.json())
+                .then(countriesGeoJson => {
+                    const countryData = countriesGeoJson.features.map(feature => {
+                        const centroid = turf.centroid(feature.geometry);
+                        feature.properties.LAT = centroid.geometry.coordinates[1];
+                        feature.properties.LON = centroid.geometry.coordinates[0];
+                        return feature;
+                    });
+
+                    world.polygonsData(countryData);
+                    world.htmlElementsData(countryData.filter(d => highlightedCountries.has(d.properties.NAME) && countryIsoMap.has(d.properties.NAME)));
+                });
+        });
+
+        const turfScript = document.createElement("script");
+        turfScript.src = "https://unpkg.com/@turf/turf@6/turf.min.js";
+        document.head.appendChild(turfScript);
+
+    </script>
+</body>
+</html>
+
+
